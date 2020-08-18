@@ -1,14 +1,29 @@
 import mysql.connector
-from model.RecipeSchema import RecipeSchema
-from model.BookSchema import BookSchema
+import os
 
 
 class RecipeManagerDBC:
     def __init__(self):
-        self.connection = mysql.connector.connect(host="localhost",
-                                                  database="recipe_manager",
-                                                  user="rm_user",
-                                                  password="rmpassword")
+        host = os.environ.get("JAWS_MARIA_HOST")
+        if host is None:
+            host = "localhost"
+
+        database = os.environ.get("JAWS_MARIA_DATABASE")
+        if database is None:
+            database = "recipe_manager"
+
+        user = os.environ.get("JAWS_MARIA_USER")
+        if user is None:
+            user = "rm_user"
+
+        password = os.environ.get("JAWS_MARIA_PASSWORD")
+        if password is None:
+            password = "rmpassword"
+
+        self.connection = mysql.connector.connect(host=host,
+                                                  database=database,
+                                                  user=user,
+                                                  password=password)
 
     def select_recipes(self):
         c = self.connection.cursor()
