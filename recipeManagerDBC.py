@@ -4,19 +4,19 @@ import os
 
 class RecipeManagerDBC:
     def __init__(self):
-        host = os.environ.get("JAWS_MARIA_HOST")
+        host = os.environ.get("JAWSDB_MARIA_HOST")
         if host is None:
             host = "localhost"
 
-        database = os.environ.get("JAWS_MARIA_DATABASE")
+        database = os.environ.get("JAWSDB_MARIA_DATABASE")
         if database is None:
             database = "recipe_manager"
 
-        user = os.environ.get("JAWS_MARIA_USER")
+        user = os.environ.get("JAWSDB_MARIA_USER")
         if user is None:
             user = "rm_user"
 
-        password = os.environ.get("JAWS_MARIA_PASSWORD")
+        password = os.environ.get("JAWSDB_MARIA_PASSWORD")
         if password is None:
             password = "rmpassword"
 
