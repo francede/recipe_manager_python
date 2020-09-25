@@ -4,26 +4,17 @@ import os
 
 class RecipeManagerDBC:
     def __init__(self):
-        host = os.environ.get("JAWSDB_MARIA_HOST")
-        if host is None:
-            host = "localhost"
-
-        database = os.environ.get("JAWSDB_MARIA_DATABASE")
-        if database is None:
-            database = "recipe_manager"
-
-        user = os.environ.get("JAWSDB_MARIA_USER")
-        if user is None:
-            user = "rm_user"
-
-        password = os.environ.get("JAWSDB_MARIA_PASSWORD")
-        if password is None:
-            password = "rmpassword"
+        host = os.environ.get("JAWSDB_MARIA_HOST", "localhost")
+        database = os.environ.get("JAWSDB_MARIA_DATABASE", "recipe_manager")
+        user = os.environ.get("JAWSDB_MARIA_USER", "rm_user")
+        password = os.environ.get("JAWSDB_MARIA_PASSWORD", "rmpassword")
 
         self.connection = mysql.connector.connect(host=host,
                                                   database=database,
                                                   user=user,
                                                   password=password)
+
+    # RECIPES ---
 
     def select_recipes(self):
         c = self.connection.cursor()
@@ -43,7 +34,8 @@ class RecipeManagerDBC:
     def insert_recipe(self, form_data):
         c = self.connection.cursor()
         c.execute("""
-                  INSERT INTO recipe (name, active_time_minutes, total_time_minutes, description, servings)
+                  INSERT INTO recipe (recipe_name, recipe_active_time_minutes, recipe_total_time_minutes, 
+                  recipe_description, recipe_servings)
                   VALUES (%s, %s, %s, %s, %s)
                   """,
                   (form_data.get("recipe_name"), form_data.get("recipe_active_time_minutes"),
@@ -55,8 +47,28 @@ class RecipeManagerDBC:
         c.close()
         return inserted_row_id
 
-    def update_recipe(self, recipe):
-        pass
+    def update_recipe(self, recipe_id, form_data):
+        query = "UPDATE recipe SET "
+        c = self.connection.cursor()
+        args = list()
+
+        for key, val in form_data.items():
+            query = query + f"{key} = %s, "
+            args.append(val)
+
+        # Slice comma and space after last "SET"
+        query = query[:-2]
+
+        query = query + " WHERE recipe_id = %s"
+        args.append(recipe_id)
+
+        c.execute(query, args)
+        updated_row_count = c.rowcount
+
+        self.connection.commit()
+        c.close()
+
+        return updated_row_count
 
     def delete_recipe(self, recipe_id):
         c = self.connection.cursor()
@@ -67,6 +79,25 @@ class RecipeManagerDBC:
         self.connection.commit()
         c.close()
         return deleted_row_count
+
+    def insert_tag_to_recipe(self, recipe_id, tag_id):
+        c = self.connection.cursor()
+        c.execute("INSERT INTO recipe_tags (recipe_id, tag_id) VALUES (%s, %s)", (recipe_id, tag_id,))
+
+        self.connection.commit()
+        c.close()
+
+    def delete_tag_from_recipe(self, recipe_id, tag_id):
+        c = self.connection.cursor()
+        c.execute("DELETE FROM recipe_tags WHERE recipe_id = %s AND tag_id = %s", (recipe_id, tag_id,))
+
+        deleted_row_count = c.rowcount
+
+        self.connection.commit()
+        c.close()
+        return deleted_row_count
+
+    # BOOKS ---
 
     def select_books(self):
         c = self.connection.cursor()
@@ -85,13 +116,36 @@ class RecipeManagerDBC:
 
     def insert_book(self, form_data):
         c = self.connection.cursor()
-        c.execute("INSERT INTO book (name) VALUES (%s)",
+        c.execute("INSERT INTO book (book_name) VALUES (%s)",
                   (form_data.get("book_name"),))
 
         inserted_row_id = c.getlastrowid()
         self.connection.commit()
         c.close()
         return inserted_row_id
+
+    def update_book(self, book_id, form_data):
+        query = "UPDATE book SET "
+        c = self.connection.cursor()
+        args = list()
+
+        for key, val in form_data.items():
+            query = query + f"{key} = %s, "
+            args.append(val)
+
+        # Slice comma and space after last "SET"
+        query = query[:-2]
+
+        query = query + " WHERE book_id = %s"
+        args.append(book_id)
+
+        c.execute(query, args)
+        updated_row_count = c.rowcount
+
+        self.connection.commit()
+        c.close()
+
+        return updated_row_count
 
     def delete_book(self, book_id):
         c = self.connection.cursor()
@@ -106,7 +160,7 @@ class RecipeManagerDBC:
     def select_recipes_from_book(self, book_id):
         c = self.connection.cursor()
         c.execute("""
-                  SELECT recipe.recipe_id, recipe.name
+                  SELECT recipe.recipe_id, recipe.recipe_name
                   FROM book_recipes INNER JOIN recipe
                   WHERE book_id = %s AND book_recipes.recipe_id = recipe.recipe_id
                   """, (book_id,))
@@ -118,7 +172,6 @@ class RecipeManagerDBC:
         c = self.connection.cursor()
         c.execute("INSERT INTO book_recipes (book_id, recipe_id) VALUES (%s, %s)", (book_id, recipe_id,))
 
-        print(c.getlastrowid())
         self.connection.commit()
         c.close()
 
@@ -131,3 +184,76 @@ class RecipeManagerDBC:
         self.connection.commit()
         c.close()
         return deleted_row_count
+
+    def insert_tag_to_book(self, book_id, tag_id):
+        c = self.connection.cursor()
+        c.execute("INSERT INTO book_tags (book_id, tag_id) VALUES (%s, %s)", (book_id, tag_id,))
+
+        self.connection.commit()
+        c.close()
+
+    def delete_tag_from_book(self, book_id, tag_id):
+        c = self.connection.cursor()
+        c.execute("DELETE FROM book_tags WHERE book_id = %s AND tag_id = %s", (book_id, tag_id,))
+
+        deleted_row_count = c.rowcount
+
+        self.connection.commit()
+        c.close()
+        return deleted_row_count
+
+    # TAGS ---
+
+    def select_tags(self):
+        c = self.connection.cursor()
+        c.execute("SELECT * FROM tag")
+        tags = c.fetchall()
+        c.close()
+        return tags
+
+    def insert_tag(self, form_data):
+        c = self.connection.cursor()
+        c.execute("INSERT INTO tag (tag_name) VALUES (%s)", (form_data.get("tag_name"),))
+
+        inserted_row_id = c.getlastrowid()
+
+        self.connection.commit()
+        c.close()
+        return inserted_row_id
+
+    def update_tag(self, tag_id, form_data):
+        query = "UPDATE tag SET "
+        c = self.connection.cursor()
+        args = list()
+
+        for key, val in form_data.items():
+            query = query + f"{key} = %s, "
+            args.append(val)
+
+        # Slice comma and space after last "SET"
+        query = query[:-2]
+
+        query = query + " WHERE tag_id = %s"
+        args.append(tag_id)
+
+        c.execute(query, args)
+        updated_row_count = c.rowcount
+
+        self.connection.commit()
+        c.close()
+
+        return updated_row_count
+
+    def delete_tag(self, tag_id):
+        c = self.connection.cursor()
+        c.execute("DELETE FROM tag WHERE tag_id = %s", (tag_id,))
+
+        deleted_row_count = c.rowcount
+
+        self.connection.commit()
+        c.close()
+        return deleted_row_count
+
+    # TODO: STEPS ---
+
+

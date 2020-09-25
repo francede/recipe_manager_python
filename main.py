@@ -1,13 +1,18 @@
 from flask import Flask, json, request
 from recipeManagerDBC import RecipeManagerDBC
-from model.RecipeSchema import RecipeSchema
-from model.BookSchema import BookSchema
+from model.recipeschema import InsertRecipeSchema, UpdateRecipeSchema
+from model.bookschema import InsertBookSchema, UpdateBookSchema
+from model.tagschema import InsertTagSchema, UpdateTagSchema
 
 api = Flask(__name__)
 dbc = RecipeManagerDBC()
 
-recipe_schema = RecipeSchema()
-book_schema = BookSchema()
+insert_recipe_schema = InsertRecipeSchema()
+update_recipe_schema = UpdateRecipeSchema()
+insert_book_schema = InsertBookSchema()
+update_book_schema = UpdateBookSchema()
+insert_tag_schema = InsertTagSchema()
+update_tag_schema = UpdateTagSchema()
 
 
 @api.route("/recipes", methods=["GET"])
@@ -22,18 +27,33 @@ def get_recipe(recipe_id):
 
 @api.route("/recipe", methods=["POST"])
 def add_recipe():
-    errors = recipe_schema.validate(request.form)
+    errors = insert_recipe_schema.validate(request.form)
     if errors:
         return json.dumps(errors), 400
 
-    print(recipe_schema.validate(request.form))
-
     inserted_recipe_id = dbc.insert_recipe(request.form)
+
+    if request.form["recipe_tags"]:
+        for tag_id in request.form["recipe_tags"]:
+            dbc.insert_tag_to_recipe(inserted_recipe_id, tag_id)
+
+    # TODO: Add steps
+
+    return json.dumps({"message": "insertion successful", "recipe_id": inserted_recipe_id}), 201
+
+
+@api.route("/recipe/<int:recipe_id>", methods=["PUT"])
+def update_recipe(recipe_id):
+    errors = update_recipe_schema.validate(request.form)
+    if errors:
+        return json.dumps(errors), 400
+
+    updated_row_count = dbc.update_recipe(recipe_id, request.form)
 
     # TODO: Add steps
     # TODO: Add tags
 
-    return json.dumps({"message": "insertion successful", "inserted_recipe_id": inserted_recipe_id}), 201
+    return json.dumps({"message": f"updated {updated_row_count} row(s)"}), 201
 
 
 @api.route("/recipe/<int:recipe_id>", methods=["DELETE"])
@@ -53,7 +73,7 @@ def get_book(book_id):
 
 @api.route("/book", methods=["POST"])
 def add_book():
-    errors = book_schema.validate(request.form)
+    errors = insert_book_schema.validate(request.form)
     if errors:
         return json.dumps(errors), 400
 
@@ -61,7 +81,22 @@ def add_book():
 
     # TODO: Add tags
 
-    return json.dumps({"message": "insertion successful", "inserted_book_id": inserted_book_id}), 201
+    return json.dumps({"message": "insertion successful", "book_id": inserted_book_id}), 201
+
+
+@api.route("/book/<int:book_id>", methods=["PUT"])
+def update_book(book_id):
+    errors = update_book_schema.validate(request.form)
+    if len(request.form) == 0:
+        errors["form"] = ["No fields given to update."]
+    if errors:
+        return json.dumps(errors), 400
+
+    updated_row_count = dbc.update_book(book_id, request.form)
+
+    # TODO: Add tags
+
+    return json.dumps({"message": f"updated {updated_row_count} row(s)"}), 201
 
 
 @api.route("/book/<int:book_id>", methods=["DELETE"])
@@ -83,6 +118,40 @@ def add_recipe_to_book(book_id):
 @api.route("/book/<int:book_id>/recipe/<int:recipe_id>", methods=["DELETE"])
 def remove_recipe_from_book(book_id, recipe_id):
     return json.dumps({"message": f"deleted {dbc.delete_recipe_from_book(book_id, recipe_id)} row(s)"}), 200
+
+
+@api.route("/tags", methods=["GET"])
+def get_tags():
+    return json.dumps(dbc.select_tags()), 200
+
+
+@api.route("/tag", methods=["POST"])
+def add_tag():
+    errors = insert_tag_schema.validate(request.form)
+    if errors:
+        return json.dumps(errors), 400
+
+    inserted_tag_id = dbc.insert_tag(request.form)
+
+    return json.dumps({"message": "insertion successful", "tag_id": inserted_tag_id}), 201
+
+
+@api.route("/tag/<int:tag_id>", methods=["PUT"])
+def update_tag(tag_id):
+    errors = update_tag_schema.validate(request.form)
+    if len(request.form) == 0:
+        errors["form"] = ["No fields given to update."]
+    if errors:
+        return json.dumps(errors), 400
+
+    updated_row_count = dbc.update_tag(tag_id, request.form)
+
+    return json.dumps({"message": f"updated {updated_row_count} row(s)"}), 201
+
+
+@api.route("/tag/<int:tag_id>", methods=["DELETE"])
+def delete_tag(tag_id):
+    return json.dumps({"message": f"deleted {dbc.delete_tag(tag_id)} row(s)"}), 200
 
 
 if __name__ == "__main__":
