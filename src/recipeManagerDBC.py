@@ -87,9 +87,13 @@ class RecipeManagerDBC:
         self.connection.commit()
         c.close()
 
-    def delete_tag_from_recipe(self, recipe_id, tag_id):
+    def delete_tag_from_recipe(self, recipe_id, tag_id=None):
         c = self.connection.cursor()
-        c.execute("DELETE FROM recipe_tags WHERE recipe_id = %s AND tag_id = %s", (recipe_id, tag_id,))
+
+        if tag_id is None:
+            c.execute("DELETE FROM recipe_tags WHERE recipe_id = %s", (recipe_id,))
+        else:
+            c.execute("DELETE FROM recipe_tags WHERE recipe_id = %s AND tag_id = %s", (recipe_id, tag_id,))
 
         deleted_row_count = c.rowcount
 
@@ -192,9 +196,13 @@ class RecipeManagerDBC:
         self.connection.commit()
         c.close()
 
-    def delete_tag_from_book(self, book_id, tag_id):
+    def delete_tag_from_book(self, book_id, tag_id=None):
         c = self.connection.cursor()
-        c.execute("DELETE FROM book_tags WHERE book_id = %s AND tag_id = %s", (book_id, tag_id,))
+
+        if tag_id is None:
+            c.execute("DELETE FROM book_tags WHERE book_id = %s", (book_id,))
+        else:
+            c.execute("DELETE FROM book_tags WHERE book_id = %s AND tag_id = %s", (book_id, tag_id,))
 
         deleted_row_count = c.rowcount
 

@@ -1,8 +1,8 @@
 from flask import Flask, json, request
-from recipeManagerDBC import RecipeManagerDBC
-from model.recipeschema import InsertRecipeSchema, UpdateRecipeSchema
-from model.bookschema import InsertBookSchema, UpdateBookSchema
-from model.tagschema import InsertTagSchema, UpdateTagSchema
+from src.recipeManagerDBC import RecipeManagerDBC
+from src.model.recipeschema import InsertRecipeSchema, UpdateRecipeSchema
+from src.model.bookschema import InsertBookSchema, UpdateBookSchema
+from src.model.tagschema import InsertTagSchema, UpdateTagSchema
 
 api = Flask(__name__)
 dbc = RecipeManagerDBC()
@@ -50,8 +50,12 @@ def update_recipe(recipe_id):
 
     updated_row_count = dbc.update_recipe(recipe_id, request.form)
 
+    if request.form["recipe_tags"]:
+        dbc.delete_tag_from_recipe(recipe_id)
+        for tag_id in request.form["recipe_tags"]:
+            dbc.insert_tag_to_recipe(recipe_id, tag_id)
+
     # TODO: Add steps
-    # TODO: Add tags
 
     return json.dumps({"message": f"updated {updated_row_count} row(s)"}), 201
 
@@ -79,7 +83,9 @@ def add_book():
 
     inserted_book_id = dbc.insert_book(request.form)
 
-    # TODO: Add tags
+    if request.form["book_tags"]:
+        for tag_id in request.form["recipe_tags"]:
+            dbc.insert_tag_to_recipe(inserted_book_id, tag_id)
 
     return json.dumps({"message": "insertion successful", "book_id": inserted_book_id}), 201
 
@@ -94,7 +100,10 @@ def update_book(book_id):
 
     updated_row_count = dbc.update_book(book_id, request.form)
 
-    # TODO: Add tags
+    if request.form["book_tags"]:
+        dbc.delete_tag_from_recipe(book_id)
+        for tag_id in request.form["book_tags"]:
+            dbc.insert_tag_to_recipe(book_id, tag_id)
 
     return json.dumps({"message": f"updated {updated_row_count} row(s)"}), 201
 
