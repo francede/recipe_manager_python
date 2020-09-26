@@ -1,18 +1,31 @@
 from flask import Flask, json, request
+from marshmallow.validate import ValidationError
 from src.recipeManagerDBC import RecipeManagerDBC
 from src.model.recipeschema import InsertRecipeSchema, UpdateRecipeSchema
 from src.model.bookschema import InsertBookSchema, UpdateBookSchema
 from src.model.tagschema import InsertTagSchema, UpdateTagSchema
+from src.model.bookrecipeschema import BookRecipeSchema
 
 app = Flask(__name__)
 dbc = RecipeManagerDBC()
 
 insert_recipe_schema = InsertRecipeSchema()
 update_recipe_schema = UpdateRecipeSchema()
+
 insert_book_schema = InsertBookSchema()
 update_book_schema = UpdateBookSchema()
+
 insert_tag_schema = InsertTagSchema()
 update_tag_schema = UpdateTagSchema()
+
+book_recipe_schema = BookRecipeSchema()
+
+
+def form_data_to_dict(form_data):
+    data = dict()
+    for key in form_data:
+        data[key] = form_data.get(key)
+    return data
 
 
 @app.route("/recipes", methods=["GET"])
@@ -27,14 +40,15 @@ def get_recipe(recipe_id):
 
 @app.route("/recipe", methods=["POST"])
 def add_recipe():
-    errors = insert_recipe_schema.validate(request.form)
-    if errors:
-        return json.dumps(errors), 400
+    try:
+        data = insert_recipe_schema.load(form_data_to_dict(request.form))
+    except ValidationError as e:
+        return json.dumps(e.messages), 400
 
-    inserted_recipe_id = dbc.insert_recipe(request.form)
+    inserted_recipe_id = dbc.insert_recipe(data)
 
-    if request.form["recipe_tags"]:
-        for tag_id in request.form["recipe_tags"]:
+    if "recipe_tags" in data:
+        for tag_id in data["recipe_tags"]:
             dbc.insert_tag_to_recipe(inserted_recipe_id, tag_id)
 
     # TODO: Add steps
@@ -44,15 +58,16 @@ def add_recipe():
 
 @app.route("/recipe/<int:recipe_id>", methods=["PUT"])
 def update_recipe(recipe_id):
-    errors = update_recipe_schema.validate(request.form)
-    if errors:
-        return json.dumps(errors), 400
+    try:
+        data = update_recipe_schema.load(form_data_to_dict(request.form))
+    except ValidationError as e:
+        return json.dumps(e.messages), 400
 
     updated_row_count = dbc.update_recipe(recipe_id, request.form)
 
-    if request.form["recipe_tags"]:
-        dbc.delete_tag_from_recipe(recipe_id)
-        for tag_id in request.form["recipe_tags"]:
+    if "recipe_tags" in data:
+        dbc.delete_tags_from_recipe(recipe_id)
+        for tag_id in data["recipe_tags"]:
             dbc.insert_tag_to_recipe(recipe_id, tag_id)
 
     # TODO: Add steps
@@ -77,14 +92,15 @@ def get_book(book_id):
 
 @app.route("/book", methods=["POST"])
 def add_book():
-    errors = insert_book_schema.validate(request.form)
-    if errors:
-        return json.dumps(errors), 400
+    try:
+        data = insert_book_schema.load(form_data_to_dict(request.form))
+    except ValidationError as e:
+        return json.dumps(e.messages), 400
 
-    inserted_book_id = dbc.insert_book(request.form)
+    inserted_book_id = dbc.insert_book(data)
 
-    if request.form["book_tags"]:
-        for tag_id in request.form["recipe_tags"]:
+    if "book_tags" in data:
+        for tag_id in data["recipe_tags"]:
             dbc.insert_tag_to_recipe(inserted_book_id, tag_id)
 
     return json.dumps({"message": "insertion successful", "book_id": inserted_book_id}), 201
@@ -92,18 +108,17 @@ def add_book():
 
 @app.route("/book/<int:book_id>", methods=["PUT"])
 def update_book(book_id):
-    errors = update_book_schema.validate(request.form)
-    if len(request.form) == 0:
-        errors["form"] = ["No fields given to update."]
-    if errors:
-        return json.dumps(errors), 400
+    try:
+        data = update_book_schema.load(form_data_to_dict(request.form))
+    except ValidationError as e:
+        return json.dumps(e.messages), 400
 
     updated_row_count = dbc.update_book(book_id, request.form)
 
-    if request.form["book_tags"]:
-        dbc.delete_tag_from_recipe(book_id)
-        for tag_id in request.form["book_tags"]:
-            dbc.insert_tag_to_recipe(book_id, tag_id)
+    if "book_tags" in data:
+        dbc.delete_tags_from_book(book_id)
+        for tag_id in data["book_tags"]:
+            dbc.insert_tag_to_book(book_id, tag_id)
 
     return json.dumps({"message": f"updated {updated_row_count} row(s)"}), 201
 
@@ -120,7 +135,11 @@ def get_book_recipes(book_id):
 
 @app.route("/book/<int:book_id>/recipe", methods=["POST"])
 def add_recipe_to_book(book_id):
-    dbc.insert_recipe_to_book(book_id, request.form.get("recipe_id"))
+    try:
+        data = book_recipe_schema.load(form_data_to_dict(request.form))
+    except ValidationError as e:
+        return json.dumps(e.messages), 400
+    dbc.insert_recipe_to_book(book_id, data["recipe_id"])
     return json.dumps({"message":  "insertion successful"}), 201
 
 
@@ -136,24 +155,24 @@ def get_tags():
 
 @app.route("/tag", methods=["POST"])
 def add_tag():
-    errors = insert_tag_schema.validate(request.form)
-    if errors:
-        return json.dumps(errors), 400
+    try:
+        data = insert_tag_schema.load(form_data_to_dict(request.form))
+    except ValidationError as e:
+        return json.dumps(e.messages), 400
 
-    inserted_tag_id = dbc.insert_tag(request.form)
+    inserted_tag_id = dbc.insert_tag(data)
 
     return json.dumps({"message": "insertion successful", "tag_id": inserted_tag_id}), 201
 
 
 @app.route("/tag/<int:tag_id>", methods=["PUT"])
 def update_tag(tag_id):
-    errors = update_tag_schema.validate(request.form)
-    if len(request.form) == 0:
-        errors["form"] = ["No fields given to update."]
-    if errors:
-        return json.dumps(errors), 400
+    try:
+        data = update_tag_schema.load(form_data_to_dict(request.form))
+    except ValidationError as e:
+        return json.dumps(e.messages), 400
 
-    updated_row_count = dbc.update_tag(tag_id, request.form)
+    updated_row_count = dbc.update_tag(tag_id, data)
 
     return json.dumps({"message": f"updated {updated_row_count} row(s)"}), 201
 

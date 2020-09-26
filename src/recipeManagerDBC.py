@@ -31,30 +31,30 @@ class RecipeManagerDBC:
         c.close()
         return recipe
 
-    def insert_recipe(self, form_data):
+    def insert_recipe(self, data):
         c = self.connection.cursor()
         c.execute("""
                   INSERT INTO recipe (recipe_name, recipe_active_time_minutes, recipe_total_time_minutes, 
                   recipe_description, recipe_servings)
                   VALUES (%s, %s, %s, %s, %s)
                   """,
-                  (form_data.get("recipe_name"), form_data.get("recipe_active_time_minutes"),
-                   form_data.get("recipe_total_time_minutes"), form_data.get("recipe_description"),
-                   form_data.get("recipe_servings")))
+                  (data["recipe_name"], data["recipe_active_time_minutes"],
+                   data["recipe_total_time_minutes"], data["recipe_description"],
+                   data["recipe_servings"]))
 
         inserted_row_id = c.getlastrowid()
         self.connection.commit()
         c.close()
         return inserted_row_id
 
-    def update_recipe(self, recipe_id, form_data):
+    def update_recipe(self, recipe_id, data):
         query = "UPDATE recipe SET "
         c = self.connection.cursor()
         args = list()
 
-        for key, val in form_data.items():
+        for key in data:
             query = query + f"{key} = %s, "
-            args.append(val)
+            args.append(data[key])
 
         # Slice comma and space after last "SET"
         query = query[:-2]
@@ -87,7 +87,7 @@ class RecipeManagerDBC:
         self.connection.commit()
         c.close()
 
-    def delete_tag_from_recipe(self, recipe_id, tag_id=None):
+    def delete_tags_from_recipe(self, recipe_id, tag_id=None):
         c = self.connection.cursor()
 
         if tag_id is None:
@@ -118,24 +118,24 @@ class RecipeManagerDBC:
         c.close()
         return book
 
-    def insert_book(self, form_data):
+    def insert_book(self, data):
         c = self.connection.cursor()
         c.execute("INSERT INTO book (book_name) VALUES (%s)",
-                  (form_data.get("book_name"),))
+                  (data["book_name"],))
 
         inserted_row_id = c.getlastrowid()
         self.connection.commit()
         c.close()
         return inserted_row_id
 
-    def update_book(self, book_id, form_data):
+    def update_book(self, book_id, data):
         query = "UPDATE book SET "
         c = self.connection.cursor()
         args = list()
 
-        for key, val in form_data.items():
+        for key in data:
             query = query + f"{key} = %s, "
-            args.append(val)
+            args.append(data[key])
 
         # Slice comma and space after last "SET"
         query = query[:-2]
@@ -196,7 +196,7 @@ class RecipeManagerDBC:
         self.connection.commit()
         c.close()
 
-    def delete_tag_from_book(self, book_id, tag_id=None):
+    def delete_tags_from_book(self, book_id, tag_id=None):
         c = self.connection.cursor()
 
         if tag_id is None:
@@ -219,9 +219,9 @@ class RecipeManagerDBC:
         c.close()
         return tags
 
-    def insert_tag(self, form_data):
+    def insert_tag(self, data):
         c = self.connection.cursor()
-        c.execute("INSERT INTO tag (tag_name) VALUES (%s)", (form_data.get("tag_name"),))
+        c.execute("INSERT INTO tag (tag_name) VALUES (%s)", (data["tag_name"],))
 
         inserted_row_id = c.getlastrowid()
 
@@ -229,14 +229,14 @@ class RecipeManagerDBC:
         c.close()
         return inserted_row_id
 
-    def update_tag(self, tag_id, form_data):
+    def update_tag(self, tag_id, data):
         query = "UPDATE tag SET "
         c = self.connection.cursor()
         args = list()
 
-        for key, val in form_data.items():
+        for key in data:
             query = query + f"{key} = %s, "
-            args.append(val)
+            args.append(data[key])
 
         # Slice comma and space after last "SET"
         query = query[:-2]
