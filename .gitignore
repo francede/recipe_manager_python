@@ -1,2 +1,4 @@
 sql_scripts/**
 *.pyc
+venv/**
+/.idea/**
