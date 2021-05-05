@@ -1,9 +1,9 @@
 from flask import Flask
 from src.DBC.recipeManagerDBC import RecipeManagerDBC
 
-from src.main.recipeblueprint import recipe_blueprint
-from src.main.bookblueprint import book_blueprint
-from src.main.tagblueprint import tag_blueprint
+from src.blueprints.recipeblueprint import recipe_blueprint
+from src.blueprints.bookblueprint import book_blueprint
+from src.blueprints.tagblueprint import tag_blueprint
 
 
 app = Flask(__name__)
