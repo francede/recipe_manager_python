@@ -1,6 +1,5 @@
-from flask import Flask, json, request
-from marshmallow.validate import ValidationError
-from src.recipeManagerDBC import RecipeManagerDBC
+from flask import Flask
+from src.DBC.recipeManagerDBC import RecipeManagerDBC
 
 from src.main.recipeblueprint import recipe_blueprint
 from src.main.bookblueprint import book_blueprint
@@ -12,7 +11,7 @@ app.register_blueprint(recipe_blueprint)
 app.register_blueprint(book_blueprint)
 app.register_blueprint(tag_blueprint)
 
-dbc = RecipeManagerDBC()
+#dbc = RecipeManagerDBC()
 
 if __name__ == "__main__":
     app.run()
