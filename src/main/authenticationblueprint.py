@@ -1,6 +1,6 @@
-from flask import Blueprint, json, request
+from flask import Blueprint, json
 
-from src.recipeManagerDBC import RecipeManagerDBC
+from src.DBC.recipeManagerDBC import RecipeManagerDBC
 
 
 authentication_blueprint = Blueprint("authentication_endpoints", __name__)

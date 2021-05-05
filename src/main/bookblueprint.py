@@ -1,7 +1,7 @@
 from flask import Blueprint, json, request
 from marshmallow.validate import ValidationError
 
-from src.recipeManagerDBC import RecipeManagerDBC
+from src.DBC.recipeManagerDBC import RecipeManagerDBC
 
 from src.model.bookschema import InsertBookSchema, UpdateBookSchema
 from src.model.bookrecipeschema import BookRecipeSchema
@@ -14,13 +14,6 @@ insert_book_schema = InsertBookSchema()
 update_book_schema = UpdateBookSchema()
 
 book_recipe_schema = BookRecipeSchema()
-
-
-def form_data_to_dict(form_data):
-    data = dict()
-    for key in form_data:
-        data[key] = form_data.get(key)
-    return data
 
 
 @book_blueprint.route("/books", methods=["GET"])
@@ -36,7 +29,9 @@ def get_book(book_id):
 @book_blueprint.route("/book", methods=["POST"])
 def add_book():
     try:
-        data = insert_book_schema.load(form_data_to_dict(request.form))
+        data = insert_book_schema.load(request.form)
+        print(data)
+        return json.dumps({"message": "test"}), 201
     except ValidationError as e:
         return json.dumps(e.messages), 400
 
@@ -52,7 +47,7 @@ def add_book():
 @book_blueprint.route("/book/<int:book_id>", methods=["PUT"])
 def update_book(book_id):
     try:
-        data = update_book_schema.load(form_data_to_dict(request.form))
+        data = update_book_schema.load(request.form)
     except ValidationError as e:
         return json.dumps(e.messages), 400
 
@@ -79,7 +74,7 @@ def get_book_recipes(book_id):
 @book_blueprint.route("/book/<int:book_id>/recipe", methods=["POST"])
 def add_recipe_to_book(book_id):
     try:
-        data = book_recipe_schema.load(form_data_to_dict(request.form))
+        data = book_recipe_schema.load(request.form)
     except ValidationError as e:
         return json.dumps(e.messages), 400
     dbc.insert_recipe_to_book(book_id, data["recipe_id"])
