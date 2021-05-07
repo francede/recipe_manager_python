@@ -11,7 +11,12 @@ app.register_blueprint(recipe_blueprint)
 app.register_blueprint(book_blueprint)
 app.register_blueprint(tag_blueprint)
 
-#dbc = RecipeManagerDBC()
+
+@app.after_request
+def cors(response):
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    return response
+
 
 if __name__ == "__main__":
     app.run()
