@@ -1,23 +1,29 @@
-import jwt
-import hashlib
-import base64
+import os
+import mysql.connector
 
 
-class Auth:
-    @staticmethod
-    def register(username, password):
+class AuthenticationDBC:
+    def __init__(self):
+        host = os.environ.get("JAWSDB_MARIA_HOST", "localhost")
+        database = os.environ.get("JAWSDB_MARIA_DATABASE", "recipemanager")
+        user = os.environ.get("JAWSDB_MARIA_USER", "rm")
+        password = os.environ.get("JAWSDB_MARIA_PASSWORD", "rmpassword")
+
+        self.connection = mysql.connector.connect(host=host,
+                                                  database=database,
+                                                  user=user,
+                                                  password=password)
+
+    def register(self, username, password):
         """Returns true if successful registration."""
         pass
 
-    @staticmethod
-    def login(username, password):
-        """Returns jwt token if successful login, None otherwise"""
+    def login(self, username, password):
+        """Returns session id if successful login, None otherwise"""
         pass
 
-    @staticmethod
-    def validate(token):
-        """Returns true if token is valid (expiration and signature)."""
+    def validate(self, session_id):
+        """Returns true if token is valid (expiration) and ."""
 
-    @staticmethod
-    def renew(token):
+    def renew(self, session_id):
         """Returns renewed token if valid token as parameter."""
