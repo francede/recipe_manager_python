@@ -28,7 +28,7 @@ class RecipeManagerDBC:
     # RECIPES ---
 
     def select_recipes(self):
-        c = self.connection.cursor()
+        c = self.connection.cursor(dictionary=True)
         c.execute("""SELECT
                              Recipes.RecipeID as recipe_id,
                              Recipes.Name as recipe_name,
@@ -40,6 +40,7 @@ class RecipeManagerDBC:
                              Users.UserID as recipe_owner_id
                              FROM Recipes INNER JOIN Users ON Recipes.UserID = Users.UserID""")
         recipes = c.fetchall()
+        print(recipes)
         c.close()
         return recipes
 
@@ -137,14 +138,14 @@ class RecipeManagerDBC:
     # BOOKS ---
 
     def select_books(self):
-        c = self.connection.cursor()
+        c = self.connection.cursor(dictionary=True)
         c.execute("SELECT * FROM Books")
         books = c.fetchall()
         c.close()
         return books
 
     def select_book(self, book_id):
-        c = self.connection.cursor()
+        c = self.connection.cursor(dictionary=True)
         c.execute("SELECT * FROM Books WHERE BookID = %s",
                   (book_id,))
         book = c.fetchone()
@@ -246,7 +247,7 @@ class RecipeManagerDBC:
     # TAGS ---
 
     def select_tags(self):
-        c = self.connection.cursor()
+        c = self.connection.cursor(dictionary=True)
         c.execute("SELECT * FROM Tags")
         tags = c.fetchall()
         c.close()
