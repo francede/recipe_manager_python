@@ -63,6 +63,13 @@ class RecipeManagerDBC:
 
         return recipe
 
+    def recipe_exists(self, recipe_id):
+        c = self.connection.cursor()
+        c.execute("SELECT 1 FROM Recipes WHERE RecipeID = %s", (recipe_id,))
+        exists = c.fetchone() is not None
+        c.close()
+        return exists
+
     def insert_recipe(self, data, user_id):
         c = self.connection.cursor()
         c.execute("""
@@ -151,6 +158,13 @@ class RecipeManagerDBC:
         book = c.fetchone()
         c.close()
         return book
+
+    def book_exists(self, book_id):
+        c = self.connection.cursor()
+        c.execute("SELECT 1 FROM Books WHERE BookID = %s", (book_id,))
+        exists = c.fetchone() is not None
+        c.close()
+        return exists
 
     def insert_book(self, data):
         c = self.connection.cursor()
