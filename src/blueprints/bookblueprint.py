@@ -23,6 +23,8 @@ def get_books():
 
 @book_blueprint.route("/book/<int:book_id>", methods=["GET"])
 def get_book(book_id):
+    if not dbc.recipe_exists(book_id):
+        return json.dumps({"error": "Book not found"}), 404
     return json.dumps(dbc.select_book(book_id)), 200
 
 
@@ -46,6 +48,9 @@ def add_book():
 
 @book_blueprint.route("/book/<int:book_id>", methods=["PUT"])
 def update_book(book_id):
+    if not dbc.recipe_exists(book_id):
+        return json.dumps({"error": "Book not found"}), 404
+
     try:
         data = update_book_schema.load(request.form)
     except ValidationError as e:
@@ -63,16 +68,25 @@ def update_book(book_id):
 
 @book_blueprint.route("/book/<int:book_id>", methods=["DELETE"])
 def delete_book(book_id):
+    if not dbc.recipe_exists(book_id):
+        return json.dumps({"error": "Book not found"}), 404
+
     return json.dumps({"message": f"deleted {dbc.delete_book(book_id)} row(s)"}), 200
 
 
 @book_blueprint.route("/book/<int:book_id>/recipes", methods=["GET"])
 def get_book_recipes(book_id):
+    if not dbc.recipe_exists(book_id):
+        return json.dumps({"error": "Book not found"}), 404
+
     return json.dumps(dbc.select_recipes_from_book(book_id)), 200
 
 
 @book_blueprint.route("/book/<int:book_id>/recipe", methods=["POST"])
 def add_recipe_to_book(book_id):
+    if not dbc.recipe_exists(book_id):
+        return json.dumps({"error": "Book not found"}), 404
+
     try:
         data = book_recipe_schema.load(request.form)
     except ValidationError as e:
@@ -83,4 +97,7 @@ def add_recipe_to_book(book_id):
 
 @book_blueprint.route("/book/<int:book_id>/recipe/<int:recipe_id>", methods=["DELETE"])
 def remove_recipe_from_book(book_id, recipe_id):
+    if not dbc.recipe_exists(book_id):
+        return json.dumps({"error": "Book not found"}), 404
+    
     return json.dumps({"message": f"deleted {dbc.delete_recipe_from_book(book_id, recipe_id)} row(s)"}), 200

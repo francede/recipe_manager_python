@@ -21,6 +21,8 @@ def get_recipes():
 @recipe_blueprint.route("/recipe/<int:recipe_id>", methods=["GET"])
 def get_recipe(recipe_id):
     recipe = dbc.select_recipe(recipe_id)
+    if recipe is None:
+        return json.dumps({"error": "Recipe not found"}), 404
     recipe["recipe_tags"] = dbc.select_tags_by_recipe_id(recipe_id)
     recipe["recipe_steps"] = dbc.select_steps_by_recipe_id(recipe_id)
     return json.dumps(recipe), 200
@@ -47,6 +49,9 @@ def add_recipe():
 
 @recipe_blueprint.route("/recipe/<int:recipe_id>", methods=["PUT"])
 def update_recipe(recipe_id):
+    if not dbc.recipe_exists(recipe_id):
+        return json.dumps({"error": "Recipe not found"}), 404
+
     try:
         data = update_recipe_schema.load(request.form)
     except ValidationError as e:
@@ -71,5 +76,8 @@ def update_recipe(recipe_id):
 
 @recipe_blueprint.route("/recipe/<int:recipe_id>", methods=["DELETE"])
 def delete_recipe(recipe_id):
+    if not dbc.recipe_exists(recipe_id):
+        return json.dumps({"error": "Recipe not found"}), 404
+
     return json.dumps({"message": f"deleted {dbc.delete_recipe(recipe_id)} row(s)"}), 200
 
