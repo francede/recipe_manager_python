@@ -121,20 +121,20 @@ class RecipeManagerDBC:
         c.close()
         return deleted_row_count
 
-    def insert_tag_to_recipe(self, recipe_id, tag_id):
+    def insert_tag_to_recipe(self, recipe_id, tag_name):
         c = self.connection.cursor()
-        c.execute("INSERT INTO RecipeTags (RecipeID, TagID) VALUES (%s, %s)", (recipe_id, tag_id,))
+        c.execute("INSERT INTO RecipeTags (RecipeID, TagName) VALUES (%s, %s)", (recipe_id, tag_name,))
 
         self.connection.commit()
         c.close()
 
-    def delete_tags_from_recipe(self, recipe_id, tag_id=None):
+    def delete_tags_from_recipe(self, recipe_id, tag_name=None):
         c = self.connection.cursor()
 
-        if tag_id is None:
+        if tag_name is None:
             c.execute("DELETE FROM RecipeTags WHERE RecipeID = %s", (recipe_id,))
         else:
-            c.execute("DELETE FROM RecipeTags WHERE RecipeID = %s AND TagID = %s", (recipe_id, tag_id,))
+            c.execute("DELETE FROM RecipeTags WHERE RecipeID = %s AND TagName = %s", (recipe_id, tag_name,))
 
         deleted_row_count = c.rowcount
 
@@ -246,20 +246,20 @@ class RecipeManagerDBC:
         c.close()
         return deleted_row_count
 
-    def insert_tag_to_book(self, book_id, tag_id):
+    def insert_tag_to_book(self, book_id, tag_name):
         c = self.connection.cursor()
-        c.execute("INSERT INTO BookTags (BookID, TagID) VALUES (%s, %s)", (book_id, tag_id,))
+        c.execute("INSERT INTO BookTags (BookID, TagName) VALUES (%s, %s)", (book_id, tag_name,))
 
         self.connection.commit()
         c.close()
 
-    def delete_tags_from_book(self, book_id, tag_id=None):
+    def delete_tags_from_book(self, book_id, tag_name=None):
         c = self.connection.cursor()
 
-        if tag_id is None:
+        if tag_name is None:
             c.execute("DELETE FROM BookTags WHERE BookID = %s", (book_id,))
         else:
-            c.execute("DELETE FROM BookTags WHERE BookID = %s AND TagID = %s", (book_id, tag_id,))
+            c.execute("DELETE FROM BookTags WHERE BookID = %s AND TagName = %s", (book_id, tag_name,))
 
         deleted_row_count = c.rowcount
 
@@ -270,7 +270,7 @@ class RecipeManagerDBC:
     # TAGS ---
 
     def select_tags(self):
-        c = self.connection.cursor(dictionary=True)
+        c = self.connection.cursor()
         c.execute("SELECT * FROM Tags")
         tags = c.fetchall()
         c.close()
@@ -280,7 +280,7 @@ class RecipeManagerDBC:
         c = self.connection.cursor()
         c.execute("""SELECT Tags.name FROM Recipes 
                              INNER JOIN RecipeTags ON Recipes.RecipeID = RecipeTags.RecipeID
-                             INNER JOIN Tags ON RecipeTags.TagID = Tags.TagID
+                             INNER JOIN Tags ON RecipeTags.TagName = Tags.Name
                              WHERE Recipes.RecipeID = %s
                              """,
                   (recipe_id,))
@@ -299,6 +299,7 @@ class RecipeManagerDBC:
         c.close()
         return inserted_row_id
 
+    """
     def update_tag(self, tag_id, data):
         query = "UPDATE Tags SET "
         c = self.connection.cursor()
@@ -320,11 +321,11 @@ class RecipeManagerDBC:
         self.connection.commit()
         c.close()
 
-        return updated_row_count
+        return updated_row_count"""
 
-    def delete_tag(self, tag_id):
+    def delete_tag(self, tag_name):
         c = self.connection.cursor()
-        c.execute("DELETE FROM Tags WHERE TagID = %s", (tag_id,))
+        c.execute("DELETE FROM Tags WHERE Name = %s", (tag_name,))
 
         deleted_row_count = c.rowcount
 
@@ -362,7 +363,7 @@ class RecipeManagerDBC:
 
     def delete_steps(self, recipe_id):
         c = self.connection.cursor()
-        c.execute("DELETE FROM Steps WHERE RecipeID = %s", (recipe_id,) )
+        c.execute("DELETE FROM Steps WHERE RecipeID = %s", (recipe_id,))
 
         self.connection.commit()
         c.close()

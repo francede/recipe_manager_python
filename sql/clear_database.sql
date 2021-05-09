@@ -58,10 +58,9 @@ CREATE TABLE Ingredients(
 );
 
 CREATE TABLE Tags(
-  TagID INT NOT NULL AUTO_INCREMENT,
   Name VARCHAR(40) NOT NULL,
 
-  PRIMARY KEY (TagID)
+  PRIMARY KEY (Name)
 );
 
 CREATE TABLE RecipeIngredients(
@@ -79,12 +78,12 @@ CREATE TABLE RecipeIngredients(
 
 CREATE TABLE RecipeTags(
   RecipeID INT NOT NULL,
-  TagID INT NOT NULL,
+  TagName INT NOT NULL,
 
-  PRIMARY KEY (RecipeID, TagID),
+  PRIMARY KEY (RecipeID, TagName),
   FOREIGN KEY (RecipeID) REFERENCES Recipes(RecipeID)
 	ON DELETE CASCADE,
-  FOREIGN KEY (TagID) REFERENCES Tags(TagID)
+  FOREIGN KEY (TagName) REFERENCES Tags(Name)
 	ON DELETE CASCADE
 );
 

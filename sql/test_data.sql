@@ -36,9 +36,9 @@ INSERT INTO Ingredients VALUES
 (6, "Ing 6");
 
 INSERT INTO Tags VALUES
-(1, "Tag 1"),
-(2, "Tag 2"),
-(3, "Tag 3");
+("Tag 1"),
+("Tag 2"),
+("Tag 3");
 
 INSERT INTO RecipeIngredients VALUES
 (1, 1, 10, "grams"),
