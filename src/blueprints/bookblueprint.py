@@ -32,16 +32,15 @@ def get_book(book_id):
 def add_book():
     try:
         data = insert_book_schema.load(request.form)
-        print(data)
-        return json.dumps({"message": "test"}), 201
     except ValidationError as e:
         return json.dumps(e.messages), 400
 
     inserted_book_id = dbc.insert_book(data)
 
     if "book_tags" in data:
-        for tag_id in data["recipe_tags"]:
-            dbc.insert_tag_to_recipe(inserted_book_id, tag_id)
+        for tag_name in data["book_tags"]:
+            dbc.insert_ignore_tag(tag_name)
+            dbc.insert_tag_to_recipe(inserted_book_id, tag_name)
 
     return json.dumps({"message": "insertion successful", "book_id": inserted_book_id}), 201
 
@@ -60,8 +59,9 @@ def update_book(book_id):
 
     if "book_tags" in data:
         dbc.delete_tags_from_book(book_id)
-        for tag_id in data["book_tags"]:
-            dbc.insert_tag_to_book(book_id, tag_id)
+        for tag_name in data["book_tags"]:
+            dbc.insert_ignore_tag(tag_name)
+            dbc.insert_tag_to_book(book_id, tag_name)
 
     return json.dumps({"message": f"updated {updated_row_count} row(s)"}), 201
 

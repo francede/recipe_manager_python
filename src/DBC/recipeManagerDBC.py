@@ -289,9 +289,9 @@ class RecipeManagerDBC:
         c.close()
         return tags
 
-    def insert_tag(self, data):
+    def insert_ignore_tag(self, tag_name):
         c = self.connection.cursor()
-        c.execute("INSERT INTO Tags (Name) VALUES (%s)", (data["tag_name"],))
+        c.execute("INSERT IGNORE INTO Tags (Name) VALUES (LOWER(%s))", (tag_name,))
 
         inserted_row_id = c.getlastrowid()
 
@@ -325,7 +325,7 @@ class RecipeManagerDBC:
 
     def delete_tag(self, tag_name):
         c = self.connection.cursor()
-        c.execute("DELETE FROM Tags WHERE Name = %s", (tag_name,))
+        c.execute("DELETE FROM Tags WHERE Name = LOWER(%s)", (tag_name,))
 
         deleted_row_count = c.rowcount
 

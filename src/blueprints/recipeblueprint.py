@@ -38,8 +38,9 @@ def add_recipe():
     inserted_recipe_id = dbc.insert_recipe(data, 1)
 
     if "recipe_tags" in data:
-        for tag_id in data["recipe_tags"]:
-            dbc.insert_tag_to_recipe(inserted_recipe_id, tag_id)
+        for tag_name in data["recipe_tags"]:
+            dbc.insert_ignore_tag(tag_name)
+            dbc.insert_tag_to_recipe(inserted_recipe_id, tag_name)
 
     if "recipe_steps" in data:
         dbc.insert_steps(inserted_recipe_id, data["recipe_steps"])
@@ -64,8 +65,9 @@ def update_recipe(recipe_id):
 
     if tags is not None:
         dbc.delete_tags_from_recipe(recipe_id)
-        for tag_id in tags:
-            dbc.insert_tag_to_recipe(recipe_id, tag_id)
+        for tag_name in tags:
+            dbc.insert_ignore_tag(tag_name)
+            dbc.insert_tag_to_recipe(recipe_id, tag_name)
 
     if steps is not None:
         dbc.delete_steps(recipe_id)

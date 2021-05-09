@@ -48,18 +48,18 @@ INSERT INTO RecipeIngredients VALUES
 (2, 5, 20, NULL);
 
 INSERT INTO RecipeTags VALUES
-(1,1),
-(1,2),
-(2,1),
-(2,2),
-(3,1),
-(3,2),
-(3,3);
+(1,"Tag 1"),
+(1,"Tag 2"),
+(2,"Tag 1"),
+(2,"Tag 2"),
+(3,"Tag 1"),
+(3,"Tag 2"),
+(3,"Tag 3");
 
 INSERT INTO BookRecipes VALUES
 (1, 5),
 (1, 6);
 
 INSERT INTO BookTags VALUES
-(1,1),
-(1,2);
+(1,"Tag 1"),
+(1,"Tag 2");

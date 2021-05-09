@@ -11,7 +11,7 @@ class InsertRecipeSchema(Schema):
     recipe_total_time_minutes = fields.Int(required=False)
     recipe_description = fields.Str(required=False)
     recipe_servings = fields.Int(required=False)
-    recipe_tags = fields.List(fields.Int(), required=False)
+    recipe_tags = fields.List(fields.Str(), required=False)
     recipe_steps = fields.List(fields.Nested(StepSchema), required=False)
 
     @pre_load
@@ -31,7 +31,7 @@ class UpdateRecipeSchema(Schema):
     recipe_total_time_minutes = fields.Int(required=False)
     recipe_description = fields.Str(required=False)
     recipe_servings = fields.Int(required=False)
-    recipe_tags = fields.List(fields.Int(), required=False)
+    recipe_tags = fields.List(fields.Str(), required=False)
     recipe_steps = fields.List(fields.Nested(StepSchema), required=False)
 
     @validates_schema

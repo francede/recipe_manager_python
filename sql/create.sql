@@ -23,8 +23,6 @@ CREATE TABLE Sessions(
   FOREIGN KEY (UserID) REFERENCES Users(UserID)
 );
 
-CREATE TRIGGER DeleteEx
-
 CREATE TABLE Recipes(
   RecipeID INT NOT NULL AUTO_INCREMENT,
   Name VARCHAR(40) NOT NULL,
@@ -84,7 +82,7 @@ CREATE TABLE RecipeIngredients(
 
 CREATE TABLE RecipeTags(
   RecipeID INT NOT NULL,
-  TagName INT NOT NULL,
+  TagName VARCHAR(40) NOT NULL,
   
   PRIMARY KEY (RecipeID, TagName),
   FOREIGN KEY (RecipeID) REFERENCES Recipes(RecipeID)
@@ -106,7 +104,7 @@ CREATE TABLE BookRecipes(
 
 CREATE TABLE BookTags(
   BookID INT NOT NULL,
-  TagName INT NOT NULL,
+  TagName VARCHAR(40) NOT NULL,
   
   PRIMARY KEY (TagName, BookID),
   FOREIGN KEY (TagName) REFERENCES Tags(Name)
