@@ -30,15 +30,15 @@ class RecipeManagerDBC:
     def select_recipes(self):
         c = self.connection.cursor(dictionary=True)
         c.execute("""SELECT
-                             Recipes.RecipeID as recipe_id,
-                             Recipes.Name as recipe_name,
-                             Recipes.ActiveTimeMinutes as recipe_active_time_minutes,
-                             Recipes.TotalTimeMinutes as recipe_total_time_minutes,
-                             Recipes.Description as recipe_description,
-                             Recipes.Servings as recipe_servings,
-                             Users.Name as recipe_owner,
-                             Users.UserID as recipe_owner_id
-                             FROM Recipes INNER JOIN Users ON Recipes.UserID = Users.UserID""")
+                        Recipes.RecipeID as recipe_id,
+                        Recipes.Name as recipe_name,
+                        Recipes.ActiveTimeMinutes as recipe_active_time_minutes,
+                        Recipes.TotalTimeMinutes as recipe_total_time_minutes,
+                        Recipes.Description as recipe_description,
+                        Recipes.Servings as recipe_servings,
+                        Users.Name as recipe_owner,
+                        Users.UserID as recipe_owner_id
+                        FROM Recipes INNER JOIN Users ON Recipes.UserID = Users.UserID""")
         recipes = c.fetchall()
         print(recipes)
         c.close()
@@ -47,16 +47,16 @@ class RecipeManagerDBC:
     def select_recipe(self, recipe_id):
         c = self.connection.cursor(dictionary=True)
         c.execute("""SELECT
-                     Recipes.RecipeID as recipe_id,
-                     Recipes.Name as recipe_name,
-                     Recipes.ActiveTimeMinutes as recipe_active_time_minutes,
-                     Recipes.TotalTimeMinutes as recipe_total_time_minutes,
-                     Recipes.Description as recipe_description,
-                     Recipes.Servings as recipe_servings,
-                     Users.Name as recipe_owner,
-                     Users.UserID as recipe_owner_id
-                     FROM Recipes INNER JOIN Users ON Recipes.UserID = Users.UserID
-                     WHERE RecipeID = %s""",
+                        Recipes.RecipeID as recipe_id,
+                        Recipes.Name as recipe_name,
+                        Recipes.ActiveTimeMinutes as recipe_active_time_minutes,
+                        Recipes.TotalTimeMinutes as recipe_total_time_minutes,
+                        Recipes.Description as recipe_description,
+                        Recipes.Servings as recipe_servings,
+                        Users.Name as recipe_owner,
+                        Users.UserID as recipe_owner_id
+                        FROM Recipes INNER JOIN Users ON Recipes.UserID = Users.UserID
+                        WHERE RecipeID = %s""",
                   (recipe_id,))
         recipe = c.fetchone()
         c.close()
@@ -210,12 +210,21 @@ class RecipeManagerDBC:
         return deleted_row_count
 
     def select_recipes_from_book(self, book_id):
-        c = self.connection.cursor()
-        c.execute("""
-                  SELECT Recipes.RecipeID, Recipes.Name
-                  FROM BookRecipes INNER JOIN Recipes
-                  WHERE BookID = %s AND BookRecipes.RecipeID = Recipes.RecipeID
-                  """, (book_id,))
+        c = self.connection.cursor(dictionary=True)
+        c.execute("""SELECT 
+                        Recipes.RecipeID as recipe_id,
+                        Recipes.Name as recipe_name,
+                        Recipes.ActiveTimeMinutes as recipe_active_time_minutes,
+                        Recipes.TotalTimeMinutes as recipe_total_time_minutes,
+                        Recipes.Description as recipe_description,
+                        Recipes.Servings as recipe_servings,
+                        Users.Name as recipe_owner,
+                        Users.UserID as recipe_owner_id
+                        FROM BookRecipes 
+                        INNER JOIN Recipes ON BookRecipes.RecipeID = Recipes.RecipeID
+                        INNER JOIN Users ON Recipes.UserID = Users.UserID
+                        WHERE BookID = %s""",
+                  (book_id,))
         recipes = c.fetchall()
         c.close()
         return recipes
