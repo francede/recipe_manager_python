@@ -1,5 +1,5 @@
 INSERT INTO Users VALUES
-(1, "admin", "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918", "administrator"),
+(1, "admin", "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918", "admin"),
 (2, "user1", "0a041b9462caa4a31bac3567e0b6e6fd9100787db2ab433d96f6d178cabfce90", "user"),
 (3, "user2", "6025d18fe48abd45168528f18a82e265dd98d421a7084aa09f61b341703901a3", "user");
 
@@ -25,7 +25,7 @@ INSERT INTO Steps VALUES
 (3,2,"Recipe C-2"),
 (3,3,"Recipe C-3");
 
-INSERT INTO Books VALUES(1, "Book X");
+INSERT INTO Books VALUES(1, "Book X", 2);
 
 INSERT INTO Ingredients VALUES
 (1, "Ing 1"),

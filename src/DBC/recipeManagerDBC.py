@@ -36,11 +36,11 @@ class RecipeManagerDBC:
                         Recipes.TotalTimeMinutes as recipe_total_time_minutes,
                         Recipes.Description as recipe_description,
                         Recipes.Servings as recipe_servings,
-                        Users.Name as recipe_owner,
+                        Users.UserName as recipe_owner,
                         Users.UserID as recipe_owner_id
                         FROM Recipes INNER JOIN Users ON Recipes.UserID = Users.UserID""")
         recipes = c.fetchall()
-        print(recipes)
+        self.connection.commit()
         c.close()
         return recipes
 
@@ -53,22 +53,25 @@ class RecipeManagerDBC:
                         Recipes.TotalTimeMinutes as recipe_total_time_minutes,
                         Recipes.Description as recipe_description,
                         Recipes.Servings as recipe_servings,
-                        Users.Name as recipe_owner,
+                        Users.UserName as recipe_owner,
                         Users.UserID as recipe_owner_id
                         FROM Recipes INNER JOIN Users ON Recipes.UserID = Users.UserID
                         WHERE RecipeID = %s""",
                   (recipe_id,))
         recipe = c.fetchone()
+        self.connection.commit()
         c.close()
-
         return recipe
 
     def recipe_exists(self, recipe_id):
+        """Returns owner id if recipe exists"""
         c = self.connection.cursor()
-        c.execute("SELECT 1 FROM Recipes WHERE RecipeID = %s", (recipe_id,))
-        exists = c.fetchone() is not None
+        c.execute("SELECT UserID FROM Recipes WHERE RecipeID = %s", (recipe_id,))
+        row = c.fetchone()
+        self.connection.commit()
         c.close()
-        return exists
+
+        return (row or [None])[0]
 
     def insert_recipe(self, data, user_id):
         c = self.connection.cursor()
@@ -148,6 +151,7 @@ class RecipeManagerDBC:
         c = self.connection.cursor(dictionary=True)
         c.execute("SELECT * FROM Books")
         books = c.fetchall()
+        self.connection.commit()
         c.close()
         return books
 
@@ -156,15 +160,18 @@ class RecipeManagerDBC:
         c.execute("SELECT * FROM Books WHERE BookID = %s",
                   (book_id,))
         book = c.fetchone()
+        self.connection.commit()
         c.close()
         return book
 
     def book_exists(self, book_id):
+        """Returns owner id if book exists. None otherwise"""
         c = self.connection.cursor()
-        c.execute("SELECT 1 FROM Books WHERE BookID = %s", (book_id,))
-        exists = c.fetchone() is not None
+        c.execute("SELECT UserID FROM Books WHERE BookID = %s", (book_id,))
+        row = c.fetchone()
+        self.connection.commit()
         c.close()
-        return exists
+        return (row or [None])[0]
 
     def insert_book(self, data):
         c = self.connection.cursor()
@@ -218,7 +225,7 @@ class RecipeManagerDBC:
                         Recipes.TotalTimeMinutes as recipe_total_time_minutes,
                         Recipes.Description as recipe_description,
                         Recipes.Servings as recipe_servings,
-                        Users.Name as recipe_owner,
+                        Users.UserName as recipe_owner,
                         Users.UserID as recipe_owner_id
                         FROM BookRecipes 
                         INNER JOIN Recipes ON BookRecipes.RecipeID = Recipes.RecipeID
@@ -226,6 +233,7 @@ class RecipeManagerDBC:
                         WHERE BookID = %s""",
                   (book_id,))
         recipes = c.fetchall()
+        self.connection.commit()
         c.close()
         return recipes
 
@@ -273,6 +281,7 @@ class RecipeManagerDBC:
         c = self.connection.cursor()
         c.execute("SELECT * FROM Tags")
         tags = c.fetchall()
+        self.connection.commit()
         c.close()
         return tags
 
@@ -286,6 +295,7 @@ class RecipeManagerDBC:
                   (recipe_id,))
 
         tags = [t[0] for t in c.fetchall()]  # Flatten list
+        self.connection.commit()
         c.close()
         return tags
 
@@ -344,6 +354,7 @@ class RecipeManagerDBC:
                   (recipe_id,))
 
         steps = [s[0] for s in c.fetchall()]  # Flatten list
+        self.connection.commit()
         c.close()
         return steps
 
