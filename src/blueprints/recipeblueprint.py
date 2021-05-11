@@ -8,8 +8,8 @@ from src.model.recipeschema import InsertRecipeSchema, UpdateRecipeSchema
 
 
 recipe_blueprint = Blueprint("recipe_endpoints", __name__)
-dbc = RecipeManagerDBC()
-a_dbc = AuthenticationDBC()
+dbc = RecipeManagerDBC.get_instance()
+a_dbc = AuthenticationDBC.get_instance()
 
 insert_recipe_schema = InsertRecipeSchema()
 update_recipe_schema = UpdateRecipeSchema()

@@ -9,8 +9,8 @@ from src.model.bookrecipeschema import BookRecipeSchema
 
 
 book_blueprint = Blueprint("book_endpoints", __name__)
-dbc = RecipeManagerDBC()
-a_dbc = AuthenticationDBC()
+dbc = RecipeManagerDBC.get_instance()
+a_dbc = AuthenticationDBC.get_instance()
 
 insert_book_schema = InsertBookSchema()
 update_book_schema = UpdateBookSchema()

@@ -7,7 +7,7 @@ from src.model.tagschema import InsertTagSchema, UpdateTagSchema
 
 
 tag_blueprint = Blueprint("tag_endpoints", __name__)
-dbc = RecipeManagerDBC()
+dbc = RecipeManagerDBC.get_instance()
 
 insert_tag_schema = InsertTagSchema()
 update_tag_schema = UpdateTagSchema()

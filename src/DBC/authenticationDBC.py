@@ -5,7 +5,20 @@ import base64
 
 
 class AuthenticationDBC:
+    __instance = None
+
+    @staticmethod
+    def get_instance():
+        if AuthenticationDBC.__instance is None:
+            AuthenticationDBC()
+        return AuthenticationDBC.__instance
+
     def __init__(self):
+        if AuthenticationDBC.__instance is None:
+            AuthenticationDBC.__instance = self
+        else:
+            raise Exception("Trying to call init on a singleton. Use get_instance() instead")
+
         host = os.environ.get("JAWSDB_MARIA_HOST", "localhost")
         database = os.environ.get("JAWSDB_MARIA_DATABASE", "recipemanager")
         user = os.environ.get("JAWSDB_MARIA_USER", "rm")

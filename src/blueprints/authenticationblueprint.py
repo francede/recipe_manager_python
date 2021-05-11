@@ -5,7 +5,7 @@ from src.DBC.authenticationDBC import AuthenticationDBC
 
 
 authentication_blueprint = Blueprint("authentication_endpoints", __name__)
-a_dbc = AuthenticationDBC()
+a_dbc = AuthenticationDBC.get_instance()
 
 
 @authentication_blueprint.route("/register", methods=["POST"])

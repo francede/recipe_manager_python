@@ -14,7 +14,20 @@ column_alias = {
 
 
 class RecipeManagerDBC:
+    __instance = None
+
+    @staticmethod
+    def get_instance():
+        if RecipeManagerDBC.__instance is None:
+            RecipeManagerDBC()
+        return RecipeManagerDBC.__instance
+
     def __init__(self):
+        if RecipeManagerDBC.__instance is None:
+            RecipeManagerDBC.__instance = self
+        else:
+            raise Exception("Trying to call init on a singleton. Use get_instance() instead")
+
         host = os.environ.get("JAWSDB_MARIA_HOST", "localhost")
         database = os.environ.get("JAWSDB_MARIA_DATABASE", "recipemanager")
         user = os.environ.get("JAWSDB_MARIA_USER", "rm")

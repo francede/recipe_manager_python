@@ -1,5 +1,4 @@
 from flask import Flask
-from src.DBC.recipeManagerDBC import RecipeManagerDBC
 
 from src.blueprints.recipeblueprint import recipe_blueprint
 from src.blueprints.bookblueprint import book_blueprint
