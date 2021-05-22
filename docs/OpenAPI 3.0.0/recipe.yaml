@@ -1,0 +1,56 @@
+'/recipes':
+  get:
+    tags:
+      - 'recipe'
+    description: 'Returns a list of all recipes'
+    responses:
+      '200':
+        description: 'Successfully returned a list of recipes'
+
+'/recipe':
+  post:
+    tags:
+      - 'recipe'
+    responses:
+      '201':
+        description: 'Successfully added a recipe'
+      '401':
+        $ref: './common.yaml#/components/responses/Unauthorized'
+      '403':
+        $ref: './common.yaml#/components/responses/Forbidden'
+
+'/recipe/{recipe_id}':
+  get:
+    description: 'Returns a single recipe'
+    tags:
+      - 'recipe'
+    responses:
+      '200':
+        description: 'Successfully returned a recipe'
+      '404':
+        description: 'Recipe not found'
+  put:
+    tags:
+      - 'recipe'
+    responses:
+      '204':
+        description: 'Successfully updated a recipe'
+      '404':
+        description: 'Recipe not found'
+      '401':
+        $ref: './common.yaml#/components/responses/Unauthorized'
+      '403':
+        $ref: './common.yaml#/components/responses/Forbidden'
+  delete:
+    tags:
+      - 'recipe'
+    responses:
+      '204':
+        description: 'Successfully deleted a recipe'
+      '404':
+        description: 'Recipe not found'
+      '401':
+        $ref: './common.yaml#/components/responses/Unauthorized'
+      '403':
+        $ref: './common.yaml#/components/responses/Forbidden'
+

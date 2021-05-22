@@ -1,0 +1,23 @@
+schema:
+  'ErrorMessage':
+    type: 'object'
+    required:
+      - 'message'
+    properties:
+      'message':
+        type: 'string'
+
+
+
+components:
+  responses:
+    'Unauthorized':
+      description: 'Unauthorized operation'
+      content:
+        'application/json':
+          schema:
+            $ref: '#/schema/ErrorMessage'
+    'NotFound':
+      description: 'Specified resource was not found'
+    'Forbidden':
+      description: 'Credentials do not authorize to perform given operation on the specified resource'
