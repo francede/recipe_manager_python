@@ -19,5 +19,13 @@ components:
             $ref: '#/schema/ErrorMessage'
     'NotFound':
       description: 'Specified resource was not found'
+      content:
+        'application/json':
+          schema:
+            $ref: '#/schema/ErrorMessage'
     'Forbidden':
       description: 'Credentials do not authorize to perform given operation on the specified resource'
+      content:
+        'application/json':
+          schema:
+            $ref: '#/schema/ErrorMessage'

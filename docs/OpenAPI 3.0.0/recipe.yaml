@@ -6,6 +6,11 @@
     responses:
       '200':
         description: 'Successfully returned a list of recipes'
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/Recipes'
+               
 
 '/recipe':
   post:
@@ -53,4 +58,19 @@
         $ref: './common.yaml#/components/responses/Unauthorized'
       '403':
         $ref: './common.yaml#/components/responses/Forbidden'
+
+components:
+  schemas:
+    'Recipe':
+      type: 'object'
+      required:
+        - 'id'
+      properties:
+        'id':
+          type: 'integer'
+    'Recipes':
+      type: 'array'
+      items:
+        $ref: '#/components/schemas/Recipe'
+        
 
