@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  version: '0.0.1'
+  version: '1.0.0'
   title: 'Recipe Manager API'
   description: ''
 tags:
@@ -11,110 +11,34 @@ tags:
   - name: 'tag'
     description: 'Operations on tags'
 paths:
+  '/user/login':
+    $ref: './user.yaml#/~1user~1login'
+  '/users':
+    $ref: './user.yaml#/~1users'
+  '/user':
+    $ref: './user.yaml#/~1user'
+  '/user/{user_id}':
+    $ref: './user.yaml#/~1user~1{user_id}'
+
   '/recipes':
     $ref: './recipe.yaml#/~1recipes'
-          
   '/recipe':
     $ref: './recipe.yaml#/~1recipe'
-          
   '/recipe/{recipe_id}':
-    parameters: 
-      - $ref: '#/components/parameters/RecipeID'
     $ref: './recipe.yaml#/~1recipe~1{recipe_id}'
-    
-          
+
   '/books':
-    get:
-      tags:
-        - 'book'
-      description: 'Returns a list of all books'
-      responses:
-        '200':
-          description: 'Successfully returned a list of books'
-          
+    $ref: './book.yaml#/~1books'
   '/book':
-    post:
-      tags:
-        - 'book'
-      responses:
-        '200':
-          description: 'Successfully added a book'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-  
+    $ref: './book.yaml#/~1book'
   '/book/{book_id}':
-    parameters: 
-      - $ref: '#/components/parameters/BookID'
-    get:
-      description: 'Returns a single book'
-      tags:
-        - 'book'
-      responses:
-        '200':
-          description: 'Successfully returned a book'
-        '404':
-          description: 'Book not found'
-    put:
-      tags:
-        - 'book'
-      responses:
-        '200':
-          description: 'Successfully updated a Book'
-        '404':
-          description: 'Book not found'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-    delete:
-      tags:
-        - 'book'
-      responses:
-        '200':
-          description: 'Successfully deleted a book'
-        '404':
-          description: 'Book not found'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-          
+    $ref: './book.yaml#/~1book~1{book_id}' 
   '/book/{book_id}/recipes':
-    parameters: 
-      - $ref: '#/components/parameters/BookID'
-    get:
-      description: 'Returns a list of recipes which are contained in the specified book'
-      tags:
-        - 'book'
-      responses:
-        '200':
-          description: 'Successfully returned a list of recipes'
-        '404':
-          description: 'Book not found'
-    
-          
-components:
-  parameters:
-    RecipeID:
-      name: 'recipe_id'
-      in: 'path'
-      required: true
-      description: 'ID of the recipe to perform the operation on'
-      schema:
-        type: 'integer'
-    BookID:
-      name: 'book_id'
-      in: 'path'
-      required: true
-      description: 'ID of the book to perform the operation on'
-      schema:
-        type: 'integer'
-  responses:
-    Unauthorized:
-      description: 'Unauthorized operation'
-    NotFound:
-      description: 'Specified resource was not found'
-    Forbidden:
-      description: 'Credentials do not authorize for specified resource'
+    $ref: './book.yaml#/~1book~1{book_id}~1recipes'
+
+  '/tags':
+    $ref: './tag.yaml#/~1tags' 
+  '/tag':
+    $ref: './tag.yaml#/~1tag' 
+  '/tag/{tag_id}':
+    $ref: './tag.yaml#/~1tag~1{tag_id}'

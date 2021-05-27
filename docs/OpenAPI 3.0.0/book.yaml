@@ -1,0 +1,171 @@
+'/books':
+  get:
+    tags:
+      - 'book'
+    description: 'Returns a list of all books'
+    responses:
+      '200':
+        description: 'Successfully returned a list of books'
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/Books'
+        
+'/book':
+  post:
+    tags:
+      - 'book'
+    security:
+      - 'sessionCookieAuth': []
+    responses:
+      '201':
+        description: 'Successfully added a book'
+        headers:
+          'Location':
+             $ref: './common.yaml#/components/schemas/ResourceLocation'
+      '400':
+        $ref: './common.yaml#/components/responses/BadRequest'
+      '401':
+        $ref: './common.yaml#/components/responses/Unauthorized'
+      '403':
+        $ref: './common.yaml#/components/responses/Forbidden'
+
+'/book/{book_id}':
+  parameters: 
+    - $ref: '#/components/parameters/BookID'
+  get:
+    description: 'Returns a single book'
+    tags:
+      - 'book'
+    responses:
+      '200':
+        description: 'Successfully returned a book'
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/Book'
+      '404':
+        $ref: './common.yaml#/components/responses/NotFound'
+  put:
+    tags:
+      - 'book'
+    security:
+      - 'sessionCookieAuth': []
+    responses:
+      '204':
+        description: 'Successfully updated a Book'
+      '400':
+        $ref: './common.yaml#/components/responses/BadRequest'
+      '401':
+        $ref: './common.yaml#/components/responses/Unauthorized'
+      '403':
+        $ref: './common.yaml#/components/responses/Forbidden'
+      '404':
+        $ref: './common.yaml#/components/responses/NotFound'
+  delete:
+    tags:
+      - 'book'
+    security:
+      - 'sessionCookieAuth': []
+    responses:
+      '204':
+        description: 'Successfully deleted a book'
+      '401':
+        $ref: './common.yaml#/components/responses/Unauthorized'
+      '403':
+        $ref: './common.yaml#/components/responses/Forbidden'
+      '404':
+        $ref: './common.yaml#/components/responses/NotFound'
+        
+'/book/{book_id}/recipes':
+  parameters: 
+    - $ref: '#/components/parameters/BookID'
+  get:
+    description: 'Returns a list of recipes which are contained in the specified book'
+    tags:
+      - 'book'
+    responses:
+      '200':
+        description: 'Successfully returned a list of recipes'
+        content:
+          'application/json':
+            schema:
+              $ref: './recipe.yaml#/components/schemas/Recipes'
+      '404':
+        $ref: './common.yaml#/components/responses/NotFound'
+
+'/book/{book_id}/recipe':
+  parameters: 
+    - $ref: '#/components/parameters/BookID'
+  post:
+    description: 'Returns a list of recipes which are contained in the specified book'
+    tags:
+      - 'book'
+    responses:
+      '201':
+        description: 'Successfully added a recipe to a book'
+        headers:
+          'Location':
+             $ref: './common.yaml#/components/schemas/ResourceLocation'
+      '400':
+        $ref: './common.yaml#/components/responses/BadRequest'
+      '401':
+        $ref: './common.yaml#/components/responses/Unauthorized'
+      '403':
+        $ref: './common.yaml#/components/responses/Forbidden'
+
+'/book/{book_id}/recipe/{recipe_id}':
+  parameters: 
+    - $ref: '#/components/parameters/BookID'
+    - $ref: '#/components/parameters/RecipeID'
+  delete:
+    tags:
+      - 'book'
+    security:
+      - 'sessionCookieAuth': []
+    responses:
+      '204':
+        description: 'Successfully deleted a recipe from a book'
+      '401':
+        $ref: './common.yaml#/components/responses/Unauthorized'
+      '403':
+        $ref: './common.yaml#/components/responses/Forbidden'
+      '404':
+        $ref: './common.yaml#/components/responses/NotFound'
+
+components:
+  parameters:
+    BookID:
+      name: 'book_id'
+      in: 'path'
+      required: true
+      description: 'ID of the book to perform the operation on'
+      schema:
+        type: 'integer'
+    RecipeID:
+      name: 'recipe_id'
+      in: 'path'
+      required: true
+      description: 'ID of the recipe to perform the operation on'
+      schema:
+        type: 'integer'
+
+  schemas:
+    'Book':
+      type: 'object'
+      properties:
+        'id': 
+          type: 'integer'
+        'name':
+          type: 'string'
+        'owner':
+          type: 'object'
+          properties:
+            'id':
+              type: 'integer'
+            'username':
+              type: 'string'
+    'Books':
+      type: 'array'
+      items:
+        $ref: '#/components/schemas/Book'

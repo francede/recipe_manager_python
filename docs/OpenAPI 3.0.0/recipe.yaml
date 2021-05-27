@@ -11,20 +11,38 @@
             schema:
               $ref: '#/components/schemas/Recipes'
                
-
 '/recipe':
   post:
     tags:
       - 'recipe'
+    security:
+      - 'sessionCookieAuth': []
+    requestBody:
+      required: true
+      content:
+        'application/json':
+          schema:
+            $ref: '#/components/schemas/Recipe'
+          examples:
+            'a':
+              value:
+                'id': 1
     responses:
       '201':
         description: 'Successfully added a recipe'
+        headers:
+          'Location':
+             $ref: './common.yaml#/components/schemas/ResourceLocation'
+      '400':
+        $ref: './common.yaml#/components/responses/BadRequest'
       '401':
         $ref: './common.yaml#/components/responses/Unauthorized'
       '403':
         $ref: './common.yaml#/components/responses/Forbidden'
 
 '/recipe/{recipe_id}':
+  parameters: 
+    - $ref: '#/components/parameters/RecipeID'
   get:
     description: 'Returns a single recipe'
     tags:
@@ -32,45 +50,89 @@
     responses:
       '200':
         description: 'Successfully returned a recipe'
+        content:
+          'application/json':
+            schema:
+             $ref: '#/components/schemas/Recipe'
       '404':
-        description: 'Recipe not found'
+        $ref: './common.yaml#/components/responses/NotFound'
   put:
     tags:
       - 'recipe'
+    security:
+      - 'sessionCookieAuth': []
     responses:
       '204':
         description: 'Successfully updated a recipe'
-      '404':
-        description: 'Recipe not found'
+      '400':
+        $ref: './common.yaml#/components/responses/BadRequest'
       '401':
         $ref: './common.yaml#/components/responses/Unauthorized'
       '403':
         $ref: './common.yaml#/components/responses/Forbidden'
+      '404':
+        $ref: './common.yaml#/components/responses/NotFound'
   delete:
     tags:
       - 'recipe'
+    security:
+      - 'sessionCookieAuth': []
     responses:
       '204':
         description: 'Successfully deleted a recipe'
-      '404':
-        description: 'Recipe not found'
       '401':
         $ref: './common.yaml#/components/responses/Unauthorized'
       '403':
         $ref: './common.yaml#/components/responses/Forbidden'
+      '404':
+        $ref: './common.yaml#/components/responses/NotFound'
 
 components:
+  parameters:
+    RecipeID:
+      name: 'recipe_id'
+      in: 'path'
+      required: true
+      description: 'ID of the recipe to perform the operation on'
+      schema:
+        type: 'integer'
+
   schemas:
     'Recipe':
       type: 'object'
-      required:
-        - 'id'
       properties:
         'id':
           type: 'integer'
+        'name':
+          type: 'string'
+        'tags':
+          type: 'array'
+          items:
+            type: 'string'
+        'description':
+          type: 'string'
+        'steps':
+          type: 'array'
+          items:
+            type: 'string'
+        'servings':
+          type: 'integer'
+        'active_time_minutes':
+          type: 'integer'
+        'total_time_minutes':
+          type: 'integer'
+        'owner':
+          type: 'object'
+          properties:
+            'username':
+              type: 'string'
+            'id':
+              type: 'integer'
+        
     'Recipes':
       type: 'array'
       items:
         $ref: '#/components/schemas/Recipe'
+
         
 

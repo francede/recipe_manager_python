@@ -1,31 +1,47 @@
-schema:
-  'ErrorMessage':
-    type: 'object'
-    required:
-      - 'message'
-    properties:
-      'message':
-        type: 'string'
-
-
-
 components:
+  securitySchemes:
+    'sessionCookieAuth':
+      type: 'apiKey'
+      in: 'cookie'
+      name: 'RMSESSION'
+    'basicAuth':
+      type: 'http'
+      scheme: 'basic'
+
+  schemas:
+    'ErrorMessage':
+      type: 'object'
+      required:
+        - 'message'
+      properties:
+        'message':
+          type: 'string'
+    'ResourceLocation':
+      description: 'URL of the added resource'
+      type: 'string'
+
   responses:
     'Unauthorized':
       description: 'Unauthorized operation'
       content:
         'application/json':
           schema:
-            $ref: '#/schema/ErrorMessage'
+            $ref: '#/components/schemas/ErrorMessage'
     'NotFound':
       description: 'Specified resource was not found'
       content:
         'application/json':
           schema:
-            $ref: '#/schema/ErrorMessage'
+            $ref: '#/components/schemas/ErrorMessage'
     'Forbidden':
       description: 'Credentials do not authorize to perform given operation on the specified resource'
       content:
         'application/json':
           schema:
-            $ref: '#/schema/ErrorMessage'
+            $ref: '#/components/schemas/ErrorMessage'
+    'BadRequest':
+      description: 'Bad request'
+      content:
+        'application/json':
+          schema:
+            $ref: '#/components/schemas/ErrorMessage'

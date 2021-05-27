@@ -1,0 +1,100 @@
+'/tags':
+  get:
+    tags:
+      - 'tag'
+    description: 'Returns a list of all tags'
+    responses:
+      '200':
+        description: 'Successfully returned a list of tags'
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/Tags'
+
+'/tag':
+  post:
+    tags:
+      - 'tag'
+    security:
+      - 'sessionCookieAuth': []
+    responses:
+      '201':
+        description: 'Successfully added a tag'
+        headers:
+          'Location':
+             $ref: './common.yaml#/components/schemas/ResourceLocation'
+      '400':
+        $ref: './common.yaml#/components/responses/BadRequest'
+      '401':
+        $ref: './common.yaml#/components/responses/Unauthorized'
+      '403':
+        $ref: './common.yaml#/components/responses/Forbidden'
+
+'/tag/{tag_id}':
+  parameters: 
+    - $ref: '#/components/parameters/TagID'
+  get:
+    description: 'Returns a single tag'
+    tags:
+      - 'tag'
+    responses:
+      '200':
+        description: 'Successfully returned a tag'
+        content:
+          'application/json':
+            schema:
+             $ref: '#/components/schemas/Tag'
+      '404':
+        $ref: './common.yaml#/components/responses/NotFound'
+  put:
+    tags:
+      - 'tag'
+    security:
+      - 'sessionCookieAuth': []
+    responses:
+      '204':
+        description: 'Successfully updated a tag'
+      '400':
+        $ref: './common.yaml#/components/responses/BadRequest'
+      '401':
+        $ref: './common.yaml#/components/responses/Unauthorized'
+      '403':
+        $ref: './common.yaml#/components/responses/Forbidden'
+      '404':
+        $ref: './common.yaml#/components/responses/NotFound'
+  delete:
+    tags:
+      - 'tag'
+    security:
+      - 'sessionCookieAuth': []
+    responses:
+      '204':
+        description: 'Successfully deleted a tag'
+      '401':
+        $ref: './common.yaml#/components/responses/Unauthorized'
+      '403':
+        $ref: './common.yaml#/components/responses/Forbidden'
+      '404':
+        $ref: './common.yaml#/components/responses/NotFound'
+
+components:
+  schemas:
+    'Tag':
+      type: 'object'
+      properties:
+        'id':
+          type: 'integer'
+        'name':
+          type: 'string'
+    'Tags':
+      type: 'array'
+      items:
+        $ref: '#/components/schemas/Tag'
+  parameters:
+    TagID:
+      name: 'tag_id'
+      in: 'path'
+      required: true
+      description: 'ID of the tag to perform the operation on'
+      schema:
+        type: 'integer'

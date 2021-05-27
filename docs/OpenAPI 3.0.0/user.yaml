@@ -1,0 +1,112 @@
+'/user/login':
+  post:
+    tags:
+      - 'user'
+    description: 'Login using basic authentication'
+    security:
+      - 'sessionCookieAuth': []
+    responses:
+      '200':
+        description: 'Login successful'
+        headers:
+          'Set-Cookie':
+            description: Session ID for the user
+            schema:
+              type: 'string'
+      '401':
+        description: 'Login unsuccessful' 
+        $ref: './common.yaml#/components/responses/Unauthorized'
+
+'/user':
+  post:
+    tags:
+      - 'user'
+    description: 'Add a user'
+    security:
+      - 'sessionCookieAuth': []
+    responses:
+      '200':
+        description: 'Successfully created a new user'
+        content:
+          'application/json':
+            schema:
+              $ref: './common.yaml#/components/schemas/ResourceLocation'
+      '400':
+        $ref: './common.yaml#/components/responses/BadRequest'
+      '401':
+        $ref: './common.yaml#/components/responses/Unauthorized'
+      '403':
+        $ref: './common.yaml#/components/responses/Forbidden'
+
+
+'/user/{user_id}':
+  get:
+    tags:
+      - 'user'
+    description: 'Returns a details of a single user'
+    responses:
+      '200':
+        description: 'Successfully returned a list of users'
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/Users'
+  put:
+    tags:
+      - 'user'
+    security:
+      - 'sessionCookieAuth': []
+    responses:
+      '204':
+        description: 'Successfully updated a user'
+      '400':
+        $ref: './common.yaml#/components/responses/BadRequest'
+      '401':
+        $ref: './common.yaml#/components/responses/Unauthorized'
+      '403':
+        $ref: './common.yaml#/components/responses/Forbidden'
+      '404':
+        $ref: './common.yaml#/components/responses/NotFound'
+  delete:
+    tags:
+      - 'user'
+    security:
+      - 'sessionCookieAuth': []
+    responses:
+      '204':
+        description: 'Successfully deleted a user'
+      '401':
+        $ref: './common.yaml#/components/responses/Unauthorized'
+      '403':
+        $ref: './common.yaml#/components/responses/Forbidden'
+      '404':
+        $ref: './common.yaml#/components/responses/NotFound'
+
+'/users':
+  get:
+    tags:
+      - 'user'
+    description: 'Returns a list of all users'
+    responses:
+      '200':
+        description: 'Successfully returned a list of users'
+        content:
+          'application/json':
+            schema:
+              $ref: '#/components/schemas/Users'
+
+components:
+  schemas:
+    'User':
+      type: 'object'
+      properties:
+        'id':
+          type: 'integer'
+        'username':
+          type: 'string'
+        'role':
+          type: 'string'
+    'Users':
+      type: 'array'
+      items:
+        $ref: '#/components/schemas/User'
